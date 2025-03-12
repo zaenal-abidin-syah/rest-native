@@ -1,0 +1,268 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API for mahasiswa",
+    "version": "1.0",
+    "description": "Api untuk aplikasi mahasiswa",
+    "termsOfService": "https://github.com/zaenal-abidin-syah",
+    "contact": {
+      "name": "Zaenal Abidin Syah",
+      "email": "aszaenal618@gmail.com",
+      "url": "https://github.com/zaenal-abidin-syah"
+    },
+    "license": {
+      "name": "APACHE 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://mahasiswa-api.sgp.dom.my.id",
+      "description": "mahasiswa Restfull Api server"
+    }
+  ],
+  "paths": {
+    "/mahasiswa": {
+      "get": {
+        "tags": ["mahasiswa"],
+        "summary": "Get All mahasiswa",
+        "description": "Get All mahasiswa by default",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "success get all mahasiswa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Arraymahasiswa"
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/successGetAllmahasiswa"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["mahasiswa"],
+        "summary": "Tambahkan mahasiswa baru",
+        "description": "Tambahkan mahasiswa baru to database",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Createmahasiswa"
+              },
+              "examples": {
+                "contoh1": {
+                  "$ref": "#/components/examples/contoh1"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success create mahasiswa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/mahasiswa"
+                },
+                "examples": {
+                  "contoh1": {
+                    "description": "Success Create mahasiswa",
+                    "value": {
+                      "message": "add mahasiswa successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Gagal menambahkan mahasiswa baru",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/mahasiswa"
+                },
+                "examples": {
+                  "contoh1": {
+                    "description": "Gagal tambah mahasiswa",
+                    "value": {
+                      "message": "please, fill name, nim and email!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mahasiswa/{mahasiswaId}": {
+      "get": {
+        "tags": ["mahasiswa"],
+        "summary": "Get mahasiswa by mahasiswa Id",
+        "description": "Get mahasiswa by mahasiswa id",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/mahasiswaId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success get mahasiswa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/mahasiswa"
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/successGetmahasiswa"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "failed get mahasiswa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "failed": {
+                    "description": "failed get mahasiswa",
+                    "value": {
+                      "message": "mahasiswa not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "mahasiswaId": {
+        "name": "mahasiswaId",
+        "in": "path",
+        "required": true,
+        "description": "mahasiswa id for get mahasiswa",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "example": "1"
+        },
+        "examples": {
+          "contoh1": {
+            "description": "sample todolist for contoh1",
+            "value": "1"
+          },
+          "contoh2": {
+            "description": "sample todolist for contoh2",
+            "value": "2"
+          }
+        }
+      }
+    },
+    "schemas": {
+      "mahasiswa": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "number_phone": {
+            "type": "string"
+          }
+        }
+      },
+      "Arraymahasiswa": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/mahasiswa"
+        }
+      },
+      "Createmahasiswa": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "required": true,
+            "minLength": 4
+          },
+          "email": {
+            "type": "string",
+            "required": true,
+            "minLength": 4
+          },
+          "number_phone": {
+            "type": "string",
+            "required": true,
+            "minLength": 4
+          }
+        }
+      }
+    },
+    "examples": {
+      "successGetAllmahasiswa": {
+        "description": "success get all mahasiswa",
+        "value": [
+          {
+            "id": 99,
+            "name": "contoh1",
+            "nim": "2101411100243",
+            "email": "contoh1@email.com"
+          },
+          {
+            "id": 100,
+            "name": "contoh2",
+            "nim": "2101411100233",
+            "email": "contoh2@email.com"
+          }
+        ]
+      },
+      "successGetmahasiswa": {
+        "description": "success get all mahasiswa",
+        "value": {
+          "id": 99,
+          "name": "contoh1",
+          "nim": "2101411100212",
+          "email": "contoh1@email.com"
+        }
+      },
+      "contoh1": {
+        "description": "create mahasiswa contoh1",
+        "value": {
+          "name": "name1",
+          "nim": "2101411100213",
+          "email": "name1@email.com"
+        }
+      }
+    }
+  }
+}
