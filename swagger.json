@@ -17,7 +17,7 @@
   },
   "servers": [
     {
-      "url": "https://kuliah2025.my.id/t21-186",
+      "url": "http://localhost:8000",
       "description": "mahasiswa Restfull Api server"
     }
   ],
@@ -77,7 +77,7 @@
                   "contoh1": {
                     "description": "Success Create mahasiswa",
                     "value": {
-                      "message": "add mahasiswa successfully"
+                      "message": "mahasiswa added successfully!"
                     }
                   }
                 }
@@ -101,18 +101,36 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/mahasiswa"
+                },
+                "examples": {
+                  "contoh1": {
+                    "description": "Server Error!",
+                    "value": {
+                      "message": "Server Error!"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
-    "/mahasiswa/{mahasiswaId}": {
+    "/mahasiswa/{mahasiswaName}": {
       "get": {
         "tags": ["mahasiswa"],
-        "summary": "Get mahasiswa by mahasiswa Id",
-        "description": "Get mahasiswa by mahasiswa id",
+        "summary": "Get mahasiswa by mahasiswa name",
+        "description": "Get mahasiswa by mahasiswa name",
         "parameters": [
           {
-            "$ref": "#/components/parameters/mahasiswaId"
+            "$ref": "#/components/parameters/mahasiswaName"
           }
         ],
         "responses": {
@@ -156,15 +174,144 @@
           }
         }
       }
+    },
+    "/mahasiswa/{mahasiswaId}": {
+      "put": {
+        "tags": ["mahasiswa"],
+        "summary": "Update mahasiswa",
+        "description": "update mahasiswa",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/mahasiswaId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Createmahasiswa"
+              },
+              "examples": {
+                "contoh1": {
+                  "$ref": "#/components/examples/contoh1"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success Update mahasiswa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/mahasiswa"
+                },
+                "examples": {
+                  "contoh1": {
+                    "description": "Success Update mahasiswa",
+                    "value": {
+                      "message": "Mahasiswa updated successfully!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Gagal Update mahasiswa baru",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/mahasiswa"
+                },
+                "examples": {
+                  "contoh1": {
+                    "description": "Gagal update mahasiswa",
+                    "value": {
+                      "message": "please, fill name, nim and email!"
+                    }
+                  },
+                  "contoh2": {
+                    "description": "Gagal update mahasiswa",
+                    "value": {
+                      "message": "Membutuhkan parameter ID mahasiswa"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Membutuhkan Parameter ID mahasiswa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/mahasiswa"
+                },
+                "examples": {
+                  "contoh1": {
+                    "description": "Gagal update mahasiswa",
+                    "value": {
+                      "message": "Update Mahasiswa failed!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/mahasiswa"
+                },
+                "examples": {
+                  "contoh1": {
+                    "description": "Server Error!",
+                    "value": {
+                      "message": "Server Error!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "parameters": {
+      "mahasiswaName": {
+        "name": "mahasiswaName",
+        "in": "path",
+        "required": true,
+        "description": "mahasiswa name to get mahasiswa",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "example": "Nama Mahasiswa"
+        },
+        "examples": {
+          "contoh1": {
+            "description": "sample mahasiswa for contoh1",
+            "value": "Zaenal Abidin Syah"
+          },
+          "contoh2": {
+            "description": "sample mahasiswa for contoh2",
+            "value": "Rizki Alamsyah"
+          }
+        }
+      },
       "mahasiswaId": {
         "name": "mahasiswaId",
         "in": "path",
         "required": true,
-        "description": "mahasiswa id for get mahasiswa",
+        "description": "mahasiswa id to update mahasiswa",
         "schema": {
           "type": "string",
           "minLength": 1,
@@ -173,11 +320,11 @@
         },
         "examples": {
           "contoh1": {
-            "description": "sample todolist for contoh1",
+            "description": "sample id mahasiwa for contoh1",
             "value": "1"
           },
           "contoh2": {
-            "description": "sample todolist for contoh2",
+            "description": "sample id mahasiswa for contoh2",
             "value": "2"
           }
         }
@@ -193,10 +340,10 @@
           "name": {
             "type": "string"
           },
-          "email": {
+          "nim": {
             "type": "string"
           },
-          "number_phone": {
+          "email": {
             "type": "string"
           }
         }
@@ -256,7 +403,7 @@
         }
       },
       "contoh1": {
-        "description": "create mahasiswa contoh1",
+        "description": "mahasiswa contoh1",
         "value": {
           "name": "name1",
           "nim": "2101411100213",

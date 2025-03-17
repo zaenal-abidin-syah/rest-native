@@ -39,15 +39,18 @@ $segments   = explode('/', $requestUri);
 
 // Cek apakah URL diawali dengan "users"
 if (isset($segments[0]) && $segments[0] === 'mahasiswa') {
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $name = isset($segments[1]) ? urldecode(trim(strval($segments[1]))) : null;
-        
-        if ($name !== null) {
-            $stmt = $conn->prepare("SELECT * FROM mahasiswa WHERE name = ?");
-            $stmt->bind_param("s", $name);
-            $stmt->execute();
+    // Optional user ID dari URI (misalnya: /users/1)
 
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $id = isset($segments[1]) ? intval($segments[1]) : null;
+        if ($id !== null) {
+            // Mengambil satu user berdasarkan ID dengan prepared statement
+            $stmt = $conn->prepare("SELECT * FROM mahasiswa WHERE id = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
             $result = $stmt->get_result();
+            // echo json_encode($result->fetch_assoc());
+            // return;
 
             if ($result->num_rows > 0) {
                 $user = $result->fetch_assoc();
@@ -71,59 +74,27 @@ if (isset($segments[0]) && $segments[0] === 'mahasiswa') {
     } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Mendapatkan data yang dikirim
         $data = json_decode(file_get_contents("php://input"), true);
-        if (!isset($data["name"]) || !isset($data["nim"]) || !isset($data["email"])) {
+        if (!isset($data["username"]) || !isset($data["nim"]) || !isset($data["email"])) {
             http_response_code(400);
-            echo json_encode(["message" => "Please, fill name, nim, email!"]);
+            echo json_encode(["message" => "Please, fill username, email!"]);
         } else {
             // Menambahkan user baru menggunakan prepared statement
-            $stmt = $conn->prepare("INSERT INTO mahasiswa (name, nim, email) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $data["name"], $data["nim"], $data["email"]);
+            $stmt = $conn->prepare("INSERT INTO mahasiswa (username, nim, email) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $data["username"], $data["nim"], $data["email"]);
 
             if ($stmt->execute()) {
                 $newId = $stmt->insert_id;
                 http_response_code(201);
-                echo json_encode(["message" => "mahasiswa added successfully!"]);
+                echo json_encode(["message" => "mahasiswa added successfully!", "id" => $newId]);
             } else {
                 http_response_code(500);
-                echo json_encode(["message" => "Server Error!" ]);
-            }
-            $stmt->close();
-        }
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-        // Mendapatkan data yang dikirim
-        $data = json_decode(file_get_contents("php://input"), true);
-        $id = isset($segments[1]) ? intval($segments[1]) : null;
-    
-        // Memastikan data yang dibutuhkan tersedia
-
-        if (!isset($id)){
-            http_response_code(400);
-            echo json_encode(["message" => "Membutuhkan parameter ID mahasiswa"]);
-        }else if (!isset($data["name"]) || !isset($data["nim"]) || !isset($data["email"])) {
-            http_response_code(400);
-            echo json_encode(["message" => "please, fill name, nim and email!"]);
-        } else {
-            // Update data mahasiswa berdasarkan ID menggunakan prepared statement
-            $stmt = $conn->prepare("UPDATE mahasiswa SET name = ?, nim = ?, email = ? WHERE id = ?");
-            $stmt->bind_param("sssi", $data["name"], $data["nim"], $data["email"], $id);
-    
-            if ($stmt->execute()) {
-                if ($stmt->affected_rows > 0) {
-                    http_response_code(200);
-                    echo json_encode(["message" => "Mahasiswa updated successfully!"]);
-                } else {
-                    http_response_code(404);
-                    echo json_encode(["message" => "Update Mahasiswa failed!"]);
-                }
-            } else {
-                http_response_code(500);
-                echo json_encode(["message" => "Server Error!"]);
+                echo json_encode(["message" => "Error: " . $stmt->error]);
             }
             $stmt->close();
         }
     } else {
         http_response_code(405);
-        echo json_encode(['message' => 'Method not allowed']);
+        echo json_encode(['error' => 'Method not allowed']);
     }
 } else if (isset($segments[0]) && $segments[0] === '') {
   header("Content-Type: text/html");
